@@ -1,0 +1,171 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DiabetesCare | Health Assessment</title>
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='style.css') }}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+          rel="stylesheet">
+</head>
+<body>
+    <header class="topbar">
+        <a href="/" class="brand">
+            <span class="brand-icon">✚</span>
+            <span>Diabetes<span class="brand-accent">Care</span></span>
+        </a>
+        <span class="secure-label">● Health Assessment</span>
+    </header>
+
+    <main>
+        <section class="hero">
+            <div class="hero-content">
+                <span class="eyebrow">AI-POWERED HEALTH TOOL</span>
+                <h1>Understand your health.<br>
+                    <span>Take control early.</span>
+                </h1>
+                <p>
+                    Enter your health information to receive a
+                    machine-learning-based diabetes risk prediction.
+                </p>
+                <div class="hero-points">
+                    <span>✓ Simple assessment</span>
+                    <span>✓ Instant prediction</span>
+                    <span>✓ Easy to understand</span>
+                </div>
+            </div>
+            <div class="hero-art" aria-hidden="true">
+                <div class="orbit orbit-one"></div>
+                <div class="orbit orbit-two"></div>
+                <div class="health-symbol">✚</div>
+                <div class="floating-card">
+                    <span class="pulse-dot"></span>
+                    <div>
+                        <strong>Health insights</strong>
+                        <small>Powered by machine learning</small>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="form-card">
+            <div class="form-heading">
+                <div>
+                    <span class="section-label">YOUR INFORMATION</span>
+                    <h2>Health Assessment</h2>
+                    <p>Fill in the details below to get your prediction.</p>
+                </div>
+                <div class="step-badge">PATIENT FORM</div>
+            </div>
+
+            <form action="{{ url_for('predict') }}" method="POST">
+                <div class="form-section">
+                    <h3><span class="section-icon">01</span> Personal details</h3>
+                    <div class="form-grid">
+                        <div class="field">
+                            <label for="gender">Gender</label>
+                            <select id="gender" name="gender" required>
+                                <option value="" disabled selected>Select gender</option>
+                                {% for gender in genders %}
+                                <option value="{{ gender }}">{{ gender }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <div class="field">
+                            <label for="age">Age <span>(years)</span></label>
+                            <input type="number" id="age" name="age"
+                                   min="0" max="120" step="any"
+                                   placeholder="e.g. 35" required>
+                        </div>
+
+                        <div class="field">
+                            <label for="bmi">BMI <span>(Body Mass Index)</span></label>
+                            <input type="number" id="bmi" name="bmi"
+                                   min="0.1" step="any"
+                                   placeholder="e.g. 24.5" required>
+                        </div>
+
+                        <div class="field">
+                            <label for="smoking_history">Smoking history</label>
+                            <select id="smoking_history" name="smoking_history" required>
+                                <option value="" disabled selected>Select history</option>
+                                {% for option in smoking_options %}
+                                <option value="{{ option }}">{{ option }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <h3><span class="section-icon">02</span> Medical history</h3>
+                    <div class="form-grid">
+                        <div class="field">
+                            <label for="hypertension">Hypertension</label>
+                            <select id="hypertension" name="hypertension" required>
+                                <option value="" disabled selected>Select an option</option>
+                                <option value="0">No</option>
+                                <option value="1">Yes</option>
+                            </select>
+                        </div>
+
+                        <div class="field">
+                            <label for="heart_disease">Heart disease</label>
+                            <select id="heart_disease" name="heart_disease" required>
+                                <option value="" disabled selected>Select an option</option>
+                                <option value="0">No</option>
+                                <option value="1">Yes</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <h3><span class="section-icon">03</span> Laboratory measurements</h3>
+                    <div class="form-grid">
+                        <div class="field">
+                            <label for="hba1c_level">HbA1c level <span>(%)</span></label>
+                            <input type="number" id="hba1c_level"
+                                   name="hba1c_level" min="0.1"
+                                   step="any" placeholder="e.g. 5.7" required>
+                            <small>Enter the value from your lab report.</small>
+                        </div>
+
+                        <div class="field">
+                            <label for="blood_glucose_level">
+                                Blood glucose <span>(mg/dL)</span>
+                            </label>
+                            <input type="number" id="blood_glucose_level"
+                                   name="blood_glucose_level" min="0.1"
+                                   step="any" placeholder="e.g. 110" required>
+                            <small>Use the measurement from your lab report.</small>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-footer">
+                    <p><span>ⓘ</span> Enter accurate information for a meaningful model prediction.</p>
+                    <button type="submit" class="submit-btn">
+                        Get Prediction <span>→</span>
+                    </button>
+                </div>
+            </form>
+        </section>
+
+        <div class="disclaimer">
+            <strong>Important:</strong> This project is for educational purposes only.
+            Its prediction is not a medical diagnosis or a substitute for professional
+            medical advice. Consult a qualified healthcare professional for medical decisions.
+        </div>
+    </main>
+
+    <footer>
+        <span>✚ DiabetesCare</span>
+        <span>Machine Learning Project · Health Assessment Demo</span>
+    </footer>
+</body>
+</html>

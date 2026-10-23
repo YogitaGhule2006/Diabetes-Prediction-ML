@@ -1,0 +1,21 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prediction Error</title>
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>Unable to Process Prediction</h1>
+        <p>{{ message }}</p>
+        <a href="/" class="back-button">Return to Form</a>
+        <p class="disclaimer">
+            If the problem continues, check the VS Code terminal.
+        </p>
+    </div>
+</body>
+</html>

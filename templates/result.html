@@ -1,0 +1,54 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prediction Result</title>
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Prediction Result</h1>
+            <p>Random Forest model output</p>
+        </header>
+
+        <div class="result-card">
+            <h2>{{ result }}</h2>
+
+            <p>
+                Model-estimated probability for the diabetes class:
+            </p>
+
+            <div class="probability">{{ probability }}%</div>
+
+            <p>
+                This percentage is the model's estimated probability,
+                not a confirmed diagnosis or a measure of clinical risk.
+            </p>
+        </div>
+
+        <h2>Patient Details</h2>
+
+        <div class="details">
+            <p><strong>Gender:</strong> {{ patient.gender }}</p>
+            <p><strong>Age:</strong> {{ patient.age }}</p>
+            <p><strong>Hypertension:</strong> {{ patient.hypertension }}</p>
+            <p><strong>Heart Disease:</strong> {{ patient.heart_disease }}</p>
+            <p><strong>Smoking History:</strong> {{ patient.smoking_history }}</p>
+            <p><strong>BMI:</strong> {{ patient.bmi }}</p>
+            <p><strong>HbA1c:</strong> {{ patient.hba1c_level }}</p>
+            <p><strong>Blood Glucose:</strong> {{ patient.blood_glucose_level }}</p>
+        </div>
+
+        <a href="/" class="back-button">Predict Again</a>
+
+        <p class="disclaimer">
+            For educational purposes only. This result cannot diagnose
+            diabetes. Consult a qualified healthcare professional.
+        </p>
+    </div>
+</body>
+</html>
