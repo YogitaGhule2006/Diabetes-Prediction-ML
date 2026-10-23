@@ -1,5 +1,6 @@
 
 from pathlib import Path
+import urllib.request
 
 from flask import Flask, render_template, request
 import joblib
@@ -8,9 +9,23 @@ import numpy as np
 
 app = Flask(__name__)
 
-# Load the saved model bundle from the project directory
+# Load the trained model bundle from the project directory or Hugging Face
 BASE_DIR = Path(__file__).resolve().parent
 MODEL_PATH = BASE_DIR / "diabetes_model_bundle.pkl"
+
+MODEL_URL = (
+    "https://huggingface.co/yogitaghule/"
+    "diabetes-prediction-model/resolve/main/"
+    "diabetes_model_bundle.pkl"
+)
+
+if not MODEL_PATH.exists():
+    try:
+        urllib.request.urlretrieve(MODEL_URL, MODEL_PATH)
+    except Exception as error:
+        raise RuntimeError(
+            "Could not download the trained model from Hugging Face."
+        ) from error
 
 bundle = joblib.load(MODEL_PATH)
 
@@ -48,10 +63,7 @@ def predict():
 
         # Validate numeric inputs
         values = [
-            age,
-            bmi,
-            hba1c_level,
-            blood_glucose_level
+            age, bmi, hba1c_level, blood_glucose_level
         ]
 
         if not np.isfinite(values).all():
@@ -127,10 +139,11 @@ def predict():
             probabilities[diabetes_index] * 100
         )
 
-        if prediction == 1:
-            result = "Diabetes Predicted"
-        else:
-            result = "Diabetes Not Predicted"
+        result = (
+            "Diabetes Predicted"
+            if prediction == 1
+            else "Diabetes Not Predicted"
+        )
 
         return render_template(
             "result.html",
@@ -158,9 +171,9 @@ def predict():
     except Exception:
         app.logger.exception("Prediction failed")
         return render_template(
-    "error.html",
-    message="Prediction failed. Check the server terminal for details."
-), 500
+            "error.html",
+            message="Prediction failed. Check server logs for details."
+        ), 500
 
 
 if __name__ == "__main__":
