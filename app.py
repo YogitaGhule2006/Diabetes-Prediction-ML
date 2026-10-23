@@ -1,4 +1,6 @@
 
+from pathlib import Path
+
 from flask import Flask, render_template, request
 import joblib
 import pandas as pd
@@ -6,8 +8,11 @@ import numpy as np
 
 app = Flask(__name__)
 
-# Load the saved model bundle from Google Colab
-bundle = joblib.load("diabetes_model_bundle.pkl")
+# Load the saved model bundle from the project directory
+BASE_DIR = Path(__file__).resolve().parent
+MODEL_PATH = BASE_DIR / "diabetes_model_bundle.pkl"
+
+bundle = joblib.load(MODEL_PATH)
 
 model = bundle["model"]
 scaler = bundle["scaler"]
@@ -43,7 +48,10 @@ def predict():
 
         # Validate numeric inputs
         values = [
-            age, bmi, hba1c_level, blood_glucose_level
+            age,
+            bmi,
+            hba1c_level,
+            blood_glucose_level
         ]
 
         if not np.isfinite(values).all():
@@ -52,11 +60,16 @@ def predict():
         if not 0 <= age <= 120:
             raise ValueError("Age must be between 0 and 120.")
 
-        if hypertension not in (0, 1) or heart_disease not in (0, 1):
-            raise ValueError("Medical history values are invalid.")
+        if hypertension not in (0, 1):
+            raise ValueError("Invalid hypertension value.")
+
+        if heart_disease not in (0, 1):
+            raise ValueError("Invalid heart disease value.")
 
         if bmi <= 0 or hba1c_level <= 0 or blood_glucose_level <= 0:
-            raise ValueError("BMI and laboratory values must be positive.")
+            raise ValueError(
+                "BMI, HbA1c level, and blood glucose level must be positive."
+            )
 
         if gender not in gender_categories:
             raise ValueError("Invalid gender selection.")
@@ -76,14 +89,14 @@ def predict():
             "blood_glucose_level": blood_glucose_level
         }])
 
-        # Encode categorical columns just as in Colab
+        # Encode categorical columns as done during training
         user_encoded = pd.get_dummies(
             user_data,
             columns=["gender", "smoking_history"],
             dtype=int
         )
 
-        # Match the training feature names and order
+        # Match training feature names and order
         user_encoded = user_encoded.reindex(
             columns=model_features,
             fill_value=0
@@ -97,12 +110,18 @@ def predict():
             columns=model_features
         )
 
-        # Predict using the trained Random Forest model
+        # Predict using the trained model
         prediction = int(model.predict(user_input)[0])
         probabilities = model.predict_proba(user_input)[0]
 
         # Get the probability associated with class 1
         class_list = list(model.classes_)
+
+        if 1 not in class_list:
+            raise ValueError(
+                "The loaded model does not contain the diabetes-positive class."
+            )
+
         diabetes_index = class_list.index(1)
         diabetes_probability = float(
             probabilities[diabetes_index] * 100
@@ -130,7 +149,7 @@ def predict():
             }
         )
 
-    except (ValueError, TypeError) as error:
+    except (ValueError, TypeError, KeyError) as error:
         return render_template(
             "error.html",
             message=str(error)
@@ -139,10 +158,11 @@ def predict():
     except Exception:
         app.logger.exception("Prediction failed")
         return render_template(
-            "error.html",
-            message="Prediction failed. Check the server terminal for details."
-        ), 500
+    "error.html",
+    message="Prediction failed. Check the server terminal for details."
+), 500
 
 
 if __name__ == "__main__":
+    # Debug mode is for local development only
     app.run(debug=True)
